@@ -5,11 +5,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -39,6 +43,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,19 +85,33 @@ fun GreetingPreview() {
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
-    Box {
-        Image(
+    Column {
+        Box(
             modifier = Modifier
+                .background(Color(0xFFFFA500))
                 .fillMaxWidth()
-                .offset(0.dp, (-30).dp),
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
-            contentDescription = "Header Background",
-            contentScale = ContentScale.FillWidth
-        )
-        Scaffold (
-            topBar={ AppBar() },
-        ){paddingValues ->
-                Content(paddingValues, navController)
+                .height(160.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "Health Controller",
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "The first step to be a chef",
+                    color = Color.White,
+                    fontSize = 16.sp
+                )
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                AppBar()
+            }
+        }
+        Scaffold{ paddingValues ->
+            Content(paddingValues, navController)
         }
     }
 }
@@ -100,21 +119,25 @@ fun HomeScreen(navController: NavHostController) {
 @Composable
 fun AppBar() {
     Row(
-        Modifier
-            .padding(16.dp)
-            .height(48.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround
+        horizontalArrangement = Arrangement.Center
     ) {
+
         TextField(
             value = "",
             onValueChange = {},
-            label = { Text(text = "Search food, Vegetable, etc.", fontSize = 12.sp) },
-            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .height(56.dp),
+            placeholder = { Text("Search food, Vegetable, etc...") },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Rounded.Search,
-                    contentDescription = "Search"
+                    contentDescription = "Search",
+                    modifier = Modifier.size(24.dp)
                 )
             },
             colors = TextFieldDefaults.textFieldColors(
@@ -122,13 +145,9 @@ fun AppBar() {
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             ),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
+            shape = RoundedCornerShape(8.dp)
         )
     }
-
 }
 
 
@@ -142,7 +161,6 @@ fun ImageButton(imageRes: Int, contentDescription: String, onClick: () -> Unit) 
         )
     }
 }
-
 @Composable
 fun Content(paddingValues: PaddingValues, navController: NavHostController) {
     Column(modifier = Modifier.padding(paddingValues)) {
@@ -152,19 +170,90 @@ fun Content(paddingValues: PaddingValues, navController: NavHostController) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Pass the navigation action to the ImageButton composable
-            ImageButton(imageRes = R.drawable.ic_launcher_foreground, contentDescription = "Meat") {
-                // Navigate to the meat list screen
-                navController.navigate("detail/meat")
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                ImageButton(imageRes = R.drawable.cuisine, contentDescription = "cuisine") {
+                    navController.navigate("detail/cuisine")
+                }
+                Text("Cuisine")
             }
-            ImageButton(imageRes = R.drawable.ic_launcher_foreground, contentDescription = "Vegetable") {
-                // Navigate to the vegetable list screen
-                navController.navigate("detail/vegetable")
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                ImageButton(imageRes = R.drawable.meat, contentDescription = "meat") {
+                    navController.navigate("detail/meat")
+                }
+                Text("Meat")
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                ImageButton(imageRes = R.drawable.vegetable, contentDescription = "vegetable") {
+                    navController.navigate("detail/vegetable")
+                }
+                Text("Vegetable")
             }
         }
-        // Other content, such as lists, etc.
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                ImageButton(imageRes = R.drawable.noodle, contentDescription = "noodle") {
+                    navController.navigate("detail/noodle")
+                }
+                Text("Noodle")
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                ImageButton(imageRes = R.drawable.soup, contentDescription = "soup") {
+                    navController.navigate("detail/soup")
+                }
+                Text("Soup")
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                ImageButton(imageRes = R.drawable.seeall, contentDescription = "see all") {
+                    navController.navigate("detail/see all")
+                }
+                Text("See All")
+            }
+        }
+        FeatureCard(
+            title = "Signature Recipes",
+            subtitle = "Recommendation",
+            imageRes = R.drawable.cuisine,
+            onClick = { /* 处理点击事件 */ }
+        )
+        FeatureCard(
+            title = "Spicy Recipes",
+            subtitle = "Recommendation",
+            imageRes = R.drawable.cuisine,
+            onClick = { /* 处理点击事件 */ }
+        )
     }
 }
+@Composable
+fun FeatureCard(title: String, subtitle: String, imageRes: Int, onClick: () -> Unit) {
+    Row(modifier = Modifier
+        .padding(16.dp)
+        .clickable(onClick = onClick)
+        .background(Color.White, RoundedCornerShape(10.dp))
+        .padding(16.dp)) {
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.h6)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = subtitle, style = MaterialTheme.typography.body2)
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = onClick) {
+                Text(text = "GO>")
+            }
+        }
+        Image(
+            painter = painterResource(id = imageRes),
+            contentDescription = null,
+            modifier = Modifier.size(100.dp)
+        )
+    }
+}
+
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
     object Home : Screen("home", R.string.home, Icons.Filled.Home)
@@ -181,10 +270,8 @@ fun ScreenNavigation() {
         NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
             composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.Personal.route) { PersonalScreen(navController, paddingValues) }
-            // 确保你有这些路由在NavHost中定义，以便导航可以工作。
-            composable("detail/meat") { MeatListScreen(navController) }
-            composable("detail/vegetable") { VegetableListScreen(navController) }
-            // ...其他路由
+            composable("detail/meat") { MeatListFragment(navController) }
+            composable("detail/vegetable") { VegetableListFragment(navController) }
         }
     }
 }
@@ -203,7 +290,6 @@ fun BottomNavigationBar(navController: NavHostController) {
                 selected = currentRoute == screen.route,
                 onClick = {
                     navController.navigate(screen.route) {
-                        // 避免在重新选择相同项目时出现相同目的地的多个副本
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }

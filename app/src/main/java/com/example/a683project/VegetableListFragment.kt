@@ -7,13 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 
 @Composable
-fun VegetableListScreen(navController: NavHostController) {
+fun VegetableListFragment(navController: NavHostController) {
     Column {
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
-            ImageButton(imageRes = R.drawable.ic_launcher_foreground, contentDescription = "蔬菜1") {
+            ImageButton(imageRes = R.drawable.ic_launcher_foreground, contentDescription = "vegetable") {
                 navController.navigate("vegetableDetail/1")
             }
-            ImageButton(imageRes = R.drawable.ic_launcher_foreground, contentDescription = "蔬菜2") {
+            ImageButton(imageRes = R.drawable.ic_launcher_foreground, contentDescription = "vegetable") {
                 navController.navigate("vegetableDetail/2")
             }
             // 为其他两种蔬菜添加ImageButton

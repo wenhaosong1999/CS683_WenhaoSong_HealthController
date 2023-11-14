@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 
 @Composable
-fun MeatListScreen(navController: NavHostController) {
+fun MeatListFragment(navController: NavHostController) {
     Column {
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             ImageButton(imageRes = R.drawable.ic_launcher_foreground, contentDescription = "肉类1") {
