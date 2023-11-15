@@ -1,5 +1,6 @@
 package com.example.a683project
 
+import android.media.Image
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -93,24 +95,40 @@ fun HomeScreen(navController: NavHostController) {
                 .height(160.dp),
             contentAlignment = Alignment.CenterStart
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "Health Controller",
-                    color = Color.White,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "The first step to be a chef",
-                    color = Color.White,
-                    fontSize = 16.sp
-                )
-            }
-            Column(horizontalAlignment = Alignment.End) {
+            Column(
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Image 组件
+                    Image(
+                        painter = painterResource(id = R.drawable.chef),
+                        contentDescription = "logo",
+                        modifier = Modifier.size(80.dp)
+                    )
+                    // 文本组件
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(start = 16.dp)
+                    ) {
+                        Text(
+                            text = "Health Controller",
+                            color = Color.White,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "The first step to be a chef",
+                            color = Color.White,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
                 AppBar()
             }
         }
-        Scaffold{ paddingValues ->
+        Scaffold { paddingValues ->
             Content(paddingValues, navController)
         }
     }
@@ -151,16 +169,6 @@ fun AppBar() {
 }
 
 
-@Composable
-fun ImageButton(imageRes: Int, contentDescription: String, onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
-        Image(
-            painter = painterResource(id = imageRes),
-            contentDescription = contentDescription,
-            modifier = Modifier.size(64.dp)
-        )
-    }
-}
 @Composable
 fun Content(paddingValues: PaddingValues, navController: NavHostController) {
     Column(modifier = Modifier.padding(paddingValues)) {
@@ -254,50 +262,6 @@ fun FeatureCard(title: String, subtitle: String, imageRes: Int, onClick: () -> U
     }
 }
 
-
-sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
-    object Home : Screen("home", R.string.home, Icons.Filled.Home)
-    object Personal : Screen("personal", R.string.personal, Icons.Filled.Person)
-}
-
-@Composable
-fun ScreenNavigation() {
-    val paddingValues = PaddingValues()
-    val navController = rememberNavController()
-    Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
-    ) { innerPadding ->
-        NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
-            composable(Screen.Home.route) { HomeScreen(navController) }
-            composable(Screen.Personal.route) { PersonalScreen(navController, paddingValues) }
-            composable("detail/meat") { MeatListFragment(navController) }
-            composable("detail/vegetable") { VegetableListFragment(navController) }
-        }
-    }
-}
-@Composable
-fun BottomNavigationBar(navController: NavHostController) {
-    val items = listOf(
-        Screen.Home,
-        Screen.Personal
-    )
-    BottomNavigation {
-        val currentRoute = navController.currentDestination?.route
-        items.forEach { screen ->
-            BottomNavigationItem(
-                icon = { Icon(screen.icon, contentDescription = null) },
-                label = { Text(stringResource(screen.resourceId)) },
-                selected = currentRoute == screen.route,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-    }
-}
 
 
 
