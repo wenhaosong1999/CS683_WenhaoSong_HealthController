@@ -38,6 +38,10 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -90,7 +94,7 @@ fun HomeScreen(navController: NavHostController) {
     Column {
         Box(
             modifier = Modifier
-                .background(Color(0xFFFFA500))
+                .background(MaterialTheme.colors.primary)
                 .fillMaxWidth()
                 .height(160.dp),
             contentAlignment = Alignment.CenterStart
@@ -123,7 +127,7 @@ fun HomeScreen(navController: NavHostController) {
                         )
                     }
                 }
-                AppBar()
+                AppBar(navController)
             }
         }
         Scaffold { paddingValues ->
@@ -133,7 +137,9 @@ fun HomeScreen(navController: NavHostController) {
 }
 
 @Composable
-fun AppBar() {
+fun AppBar(navController: NavHostController) {
+    var searchText by remember { mutableStateOf("") }
+    var showMessage by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -141,10 +147,16 @@ fun AppBar() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-
         TextField(
             value = "",
-            onValueChange = {},
+            onValueChange = {searchText = it
+                showMessage = searchText.isNotBlank() &&
+                        !searchText.equals("meat", ignoreCase = true) &&
+                        !searchText.equals("vegetable", ignoreCase = true)
+                if (searchText.equals("meat", ignoreCase = true) || searchText.equals("vegetable", ignoreCase = true)) {
+                    navController.navigate("list/$searchText")
+                }
+                            },
             modifier = Modifier
                 .fillMaxWidth(0.9f)
                 .height(56.dp),
@@ -163,6 +175,9 @@ fun AppBar() {
             ),
             shape = RoundedCornerShape(8.dp)
         )
+        if (showMessage) {
+            Text("Please enter another keyword", color = Color.Red)
+        }
     }
 }
 

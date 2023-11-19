@@ -1,5 +1,6 @@
 package com.example.a683project
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun BMIAndBMRCalculator() {
@@ -37,14 +39,44 @@ fun BMIAndBMRCalculator() {
     val invalidHeightState = remember { mutableStateOf(false) }
     val invalidWeightState = remember { mutableStateOf(false) }
     val invalidAgeState = remember { mutableStateOf(false) }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row {
-            RadioButton(selected = genderState.value == "Male", onClick = { genderState.value = "Male" })
-            Text("Male")
-            Spacer(modifier = Modifier.width(16.dp))
-            RadioButton(selected = genderState.value == "Female", onClick = { genderState.value = "Female" })
-            Text("Female")
+    val buttonModifier = Modifier
+        .padding(8.dp)
+        .size(width = 80.dp, height = 60.dp)
+    Column(modifier = Modifier.padding(2.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = { genderState.value = "Male" },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = if (genderState.value == "Male") MaterialTheme.colors.primary else Color(0xFFFAF9F9)
+                ),
+                modifier = buttonModifier
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.male), contentDescription = "Male")
+                    if (genderState.value == "Male") Text("Male", color = Color.White) else Text("Male", color = Color.Black)
+                }
+            }
+            Button(
+                onClick = { genderState.value = "Female" },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = if (genderState.value == "Female") MaterialTheme.colors.primary else Color(0xFFFAF9F9)
+                ),
+                modifier = buttonModifier
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.female), contentDescription = "Female")
+                    if (genderState.value == "Female") Text("Female", color = Color.White) else Text("Female", color = Color.Black)
+                }
+            }
         }
         OutlinedTextField(
             value = ageState.value,
@@ -99,17 +131,17 @@ fun BMIAndBMRCalculator() {
         }
         Spacer(modifier = Modifier.height(8.dp))
         if (invalidHeightState.value) {
-            Text("Invalid height. Please enter a value between 100-250 cm.",
+            Text("Invalid height! Please enter a value between 100-250 cm.",
                 color = Color.Red,
                 modifier = Modifier.align(Alignment.CenterHorizontally))
         }
         if (invalidWeightState.value) {
-            Text("Invalid weight. Please enter a value between 30-300 kg.",
+            Text("Invalid weight! Please enter a value between 30-300 kg.",
                 color = Color.Red,
                 modifier = Modifier.align(Alignment.CenterHorizontally))
         }
         if (invalidAgeState.value) {
-            Text("Invalid age. Please enter a value between 10-100 years.",
+            Text("Invalid age! Please enter a value between 10-100 years.",
                 color = Color.Red,
                 modifier = Modifier.align(Alignment.CenterHorizontally))
         }

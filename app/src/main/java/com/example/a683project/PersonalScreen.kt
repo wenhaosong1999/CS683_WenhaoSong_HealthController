@@ -35,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,8 @@ fun PersonalScreen(navController: NavHostController,paddingValues: PaddingValues
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("BMI and BMR Calculator") },
+                title = { Text("BMI and BMR Calculator",
+                    fontWeight = FontWeight.Normal) },
                 actions = {
                 }
             )

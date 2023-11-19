@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,14 +33,14 @@ fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel(), navController: Na
     Column {
         Box(
             modifier = Modifier
-                .background(Color(0xFFFFA500))
+                .background(MaterialTheme.colors.primary)
                 .fillMaxWidth()
                 .height(160.dp),
             contentAlignment = Alignment.CenterStart
         ) {
             Column(modifier = Modifier.fillMaxHeight()) {
                 TopBar()
-                AppBar()
+                AppBar(navController)
             }
         }
         if (viewModel.favoriteList.isEmpty()) {

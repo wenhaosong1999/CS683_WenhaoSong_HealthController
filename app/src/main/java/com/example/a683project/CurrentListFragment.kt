@@ -33,7 +33,7 @@ fun CurrentListFragment(navController: NavHostController, kind: String) {
     ) {
         Column(modifier = Modifier.fillMaxHeight()) {
             TopBar()
-            AppBar()
+            AppBar(navController)
         }
     }
     if (kind == "see all") {
