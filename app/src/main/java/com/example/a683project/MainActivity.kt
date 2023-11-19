@@ -101,13 +101,11 @@ fun HomeScreen(navController: NavHostController) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Image 组件
                     Image(
                         painter = painterResource(id = R.drawable.chef),
                         contentDescription = "logo",
                         modifier = Modifier.size(80.dp)
                     )
-                    // 文本组件
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(start = 16.dp)
@@ -180,19 +178,19 @@ fun Content(paddingValues: PaddingValues, navController: NavHostController) {
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ImageButton(imageRes = R.drawable.cuisine, contentDescription = "cuisine") {
-                    navController.navigate("detail/cuisine")
+                    navController.navigate("list/cuisine")
                 }
                 Text("Cuisine")
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ImageButton(imageRes = R.drawable.meat, contentDescription = "meat") {
-                    navController.navigate("detail/meat")
+                    navController.navigate("list/meat")
                 }
                 Text("Meat")
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ImageButton(imageRes = R.drawable.vegetable, contentDescription = "vegetable") {
-                    navController.navigate("detail/vegetable")
+                    navController.navigate("list/vegetable")
                 }
                 Text("Vegetable")
             }
@@ -206,19 +204,19 @@ fun Content(paddingValues: PaddingValues, navController: NavHostController) {
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ImageButton(imageRes = R.drawable.noodle, contentDescription = "noodle") {
-                    navController.navigate("detail/noodle")
+                    navController.navigate("list/noodle")
                 }
                 Text("Noodle")
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ImageButton(imageRes = R.drawable.soup, contentDescription = "soup") {
-                    navController.navigate("detail/soup")
+                    navController.navigate("list/soup")
                 }
                 Text("Soup")
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ImageButton(imageRes = R.drawable.seeall, contentDescription = "see all") {
-                    navController.navigate("detail/see all")
+                    navController.navigate("list/see all")
                 }
                 Text("See All")
             }
@@ -227,13 +225,13 @@ fun Content(paddingValues: PaddingValues, navController: NavHostController) {
             title = "Signature Recipes",
             subtitle = "Recommendation",
             imageRes = R.drawable.cuisine,
-            onClick = { /* 处理点击事件 */ }
+            onClick = {navController.navigate("signature")}
         )
         FeatureCard(
             title = "Spicy Recipes",
             subtitle = "Recommendation",
             imageRes = R.drawable.cuisine,
-            onClick = { /* 处理点击事件 */ }
+            onClick = {navController.navigate("spicy")}
         )
     }
 }

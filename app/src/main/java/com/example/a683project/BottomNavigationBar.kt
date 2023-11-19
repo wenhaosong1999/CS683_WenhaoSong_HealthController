@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         Screen.Home,
+        Screen.Favorite,
         Screen.Personal
     )
     BottomNavigation {

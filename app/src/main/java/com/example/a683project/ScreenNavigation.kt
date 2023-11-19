@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -18,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
     object Home : Screen("home", R.string.home, Icons.Filled.Home)
     object Personal : Screen("personal", R.string.personal, Icons.Filled.Person)
+    object Favorite : Screen("favorite", R.string.favorite, Icons.Filled.Favorite)
 }
 
 @Composable
@@ -30,12 +33,20 @@ fun ScreenNavigation() {
         NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
             composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.Personal.route) { PersonalScreen(navController, paddingValues) }
-            composable("detail/meat") { CurrentListFragment(navController,"meat") }
-            composable("detail/vegetable") { CurrentListFragment(navController, "vegetable") }
-            composable("detail/cuisine") { CurrentListFragment(navController,"cuisine") }
-            composable("detail/soup") { CurrentListFragment(navController, "vegetable") }
-            composable("detail/noodle") { CurrentListFragment(navController,"noodle") }
-            composable("detail/see all") { CurrentListFragment(navController, "see all") }
+            composable(Screen.Favorite.route) { FavoriteScreen(viewModel(), navController) }
+            composable("list/meat") { CurrentListFragment(navController,"meat") }
+            composable("list/vegetable") { CurrentListFragment(navController, "vegetable") }
+            composable("list/cuisine") { CurrentListFragment(navController,"cuisine") }
+            composable("list/soup") { CurrentListFragment(navController, "soup") }
+            composable("list/noodle") { CurrentListFragment(navController,"noodle") }
+            composable("list/see all") { CurrentListFragment(navController, "see all") }
+            composable("detail/meat") { DetailFragment(navController, "meat") }
+            composable("detail/vegetable") { DetailFragment(navController, "vegetable") }
+            composable("detail/cuisine") { DetailFragment(navController, "cuisine") }
+            composable("detail/noodle") { DetailFragment(navController, "noodle") }
+            composable("detail/soup") { DetailFragment(navController, "soup") }
+            composable("signature") { CurrentListFragment(navController,"signature") }
+            composable("spicy") { CurrentListFragment(navController,"spicy") }
         }
     }
 }

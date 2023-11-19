@@ -18,28 +18,50 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 @Composable
-fun PersonalScreen(navController: NavHostController, paddingValues: PaddingValues) {
-        Column(modifier = Modifier.padding(paddingValues)){
-            BMI_Calculator()
+fun PersonalScreen(navController: NavHostController,paddingValues: PaddingValues) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("BMI and BMR Calculator") },
+                actions = {
+                }
+            )
+        }
+    ) { paddingValues ->
+        PersonalContent(paddingValues)
     }
 }
+
+@Composable
+fun PersonalContent(paddingValues: PaddingValues) {
+    Column(modifier = Modifier.padding(paddingValues)) {
+        BMIAndBMRCalculator()
+    }
+}
+
 
 
 

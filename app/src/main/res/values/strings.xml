@@ -2,5 +2,6 @@
     <string name="app_name">683project</string>
     <string name="home">Home</string>
     <string name="personal">Personal</string>
+    <string name="favorite">Favorite</string>
 
 </resources>
