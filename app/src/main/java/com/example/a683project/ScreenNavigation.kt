@@ -36,17 +36,19 @@ fun ScreenNavigation() {
             composable(Screen.Favorite.route) { FavoriteScreen(viewModel(), navController) }
             composable("list/meat") { CurrentListFragment(navController,"meat") }
             composable("list/vegetable") { CurrentListFragment(navController, "vegetable") }
-            composable("list/cuisine") { CurrentListFragment(navController,"cuisine") }
+            composable("list/stir-fry") { CurrentListFragment(navController,"stir-fry") }
             composable("list/soup") { CurrentListFragment(navController, "soup") }
             composable("list/noodle") { CurrentListFragment(navController,"noodle") }
+            composable("signature") { CurrentListFragment(navController,"signature") }
+            composable("spicy") { CurrentListFragment(navController,"spicy") }
             composable("list/see all") { CurrentListFragment(navController, "see all") }
             composable("detail/meat") { DetailFragment(navController, "meat") }
             composable("detail/vegetable") { DetailFragment(navController, "vegetable") }
-            composable("detail/cuisine") { DetailFragment(navController, "cuisine") }
+            composable("detail/stir-fry") { DetailFragment(navController, "stir-fry") }
             composable("detail/noodle") { DetailFragment(navController, "noodle") }
             composable("detail/soup") { DetailFragment(navController, "soup") }
-            composable("signature") { CurrentListFragment(navController,"signature") }
-            composable("spicy") { CurrentListFragment(navController,"spicy") }
+            composable("detail/signature") { DetailFragment(navController, "signature") }
+            composable("detail/spicy") { DetailFragment(navController, "spicy") }
         }
     }
 }
