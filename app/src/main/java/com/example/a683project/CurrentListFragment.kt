@@ -78,6 +78,10 @@ fun ItemRow(navController: NavHostController, kind: String, storage: FirebaseSto
     Column {
         imageUrls.value.forEach { imageUrl ->
             val imageName = imageUrl.substringAfterLast("%2F").substringBefore('?')
+            val ingredients = produceState(initialValue = "", imageName) {
+                value = fetchIngredients(storage, "ingredients/$kind/$imageName")
+            }
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -89,10 +93,9 @@ fun ItemRow(navController: NavHostController, kind: String, storage: FirebaseSto
                 }
                 Column(modifier = Modifier.padding(start = 8.dp)) {
                     Text(imageName, style = MaterialTheme.typography.h6)
-                    val ingredientsText = produceState(initialValue = "", imageName) {
-                        value = fetchIngredients(storage, "ingredients/$kind/$imageName")
+                    if (ingredients.value.isNotEmpty()) {
+                        Text(ingredients.value, style = MaterialTheme.typography.body2)
                     }
-                    Text(ingredientsText.value)
                 }
             }
         }
