@@ -1,5 +1,6 @@
 package com.example.a683project
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,7 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,33 +30,38 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.google.firebase.storage.FirebaseStorage
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel(), navController: NavHostController) {
-    Column {
-        Box(
-            modifier = Modifier
-                .background(MaterialTheme.colors.primary)
-                .fillMaxWidth()
-                .height(160.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Column(modifier = Modifier.fillMaxHeight()) {
-                TopBar()
-                AppBar(navController)
-            }
+    val storage = FirebaseStorage.getInstance()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Favorite Food List", fontWeight = FontWeight.Normal) },
+                actions = {
+
+                }
+            )
         }
-        if (viewModel.favoriteList.isEmpty()) {
-            EmptyFavoritesMessage()
-        } else {
-            LazyColumn {
-                items(viewModel.favoriteList) { kind ->
-                    ItemRow(navController, kind)
+    ) {
+        Column {
+            if (viewModel.favoriteList.isEmpty()) {
+                EmptyFavoritesMessage()
+            } else {
+                LazyColumn {
+                    items(viewModel.favoriteList) { kind ->
+                        ItemRow(navController, kind, storage)
+                    }
                 }
             }
         }
     }
 }
+
+
+
 
 @Composable
 fun EmptyFavoritesMessage() {

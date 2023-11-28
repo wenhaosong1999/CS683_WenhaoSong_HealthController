@@ -52,9 +52,11 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.URL
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.tasks.await
 
 @Composable
-fun DetailFragment(navController: NavHostController, kind: String) {
+fun DetailFragment(navController: NavHostController, kind: String, name:String) {
     val viewModel: FavoriteViewModel = viewModel()
     Scaffold(
         topBar = {
@@ -71,40 +73,53 @@ fun DetailFragment(navController: NavHostController, kind: String) {
             )
         }
     ) { paddingValues ->
-        DetailContent(kind, paddingValues)
+        DetailContent(kind, name, paddingValues)
     }
 }
 
 @Composable
-fun DetailContent(kind: String, paddingValues: PaddingValues) {
-    val imageUrl = "https://firebasestorage.googleapis.com/v0/b/foodlist12.appspot.com/o/images%2Fshuizhuroupian.png?alt=media&token=2623da8a-ab55-4a3e-acb1-6241e6e1daea"
-    val textUrl = "https://firebasestorage.googleapis.com/v0/b/foodlist12.appspot.com/o/descriptions%2Fshuizhuroupian.txt?alt=media&token=5ca19fa3-1e95-4764-a46e-e62d4e668189"
+fun DetailContent(kind: String, name: String, paddingValues: PaddingValues) {
+    var imageUrl by remember { mutableStateOf<String?>(null) }
     var textContent by remember { mutableStateOf("Loading description...") }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(kind) {
+    LaunchedEffect(kind, name) {
+
         scope.launch {
-            textContent = try {
-                URL(textUrl).readText()
+            imageUrl = fetchImageUrl(kind, name)
+
+            val textFileName = name.substringBeforeLast(".png") + ".txt"
+            Log.d("ItemRow", "URL: $textFileName")
+            try {
+                val textRef =
+                    FirebaseStorage.getInstance().reference.child("descriptions/$kind/$textFileName")
+                val url = textRef.downloadUrl.await().toString()
+                textContent = withContext(Dispatchers.IO) {
+                    URL(url).readText()
+                }
             } catch (e: Exception) {
-                "Failed to load description."
+                textContent = "Failed to load description."
+                Log.e("DetailContent", "Error loading text content", e)
             }
         }
     }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .padding(paddingValues)
     ) {
         item {
-            val painter = rememberImagePainter(data = imageUrl)
-            Image(
-                painter = painter,
-                contentDescription = "Top Image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            )
+            imageUrl?.let {
+                val painter = rememberImagePainter(data = it)
+                Image(
+                    painter = painter,
+                    contentDescription = "Top Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = textContent,
@@ -114,6 +129,16 @@ fun DetailContent(kind: String, paddingValues: PaddingValues) {
                     .fillMaxWidth()
             )
         }
+    }
+}
+
+suspend fun fetchImageUrl(kind: String, name: String): String? {
+    val storageReference = FirebaseStorage.getInstance().reference.child("images/$kind/$name")
+    return try {
+        storageReference.downloadUrl.await().toString()
+    } catch (e: Exception) {
+        Log.e("fetchImageUrl", "Error fetching image URL", e)
+        null
     }
 }
 

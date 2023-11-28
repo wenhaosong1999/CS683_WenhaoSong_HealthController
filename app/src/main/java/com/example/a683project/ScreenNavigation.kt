@@ -42,13 +42,17 @@ fun ScreenNavigation() {
             composable("signature") { CurrentListFragment(navController,"signature") }
             composable("spicy") { CurrentListFragment(navController,"spicy") }
             composable("list/see all") { CurrentListFragment(navController, "see all") }
-            composable("detail/meat") { DetailFragment(navController, "meat") }
-            composable("detail/vegetable") { DetailFragment(navController, "vegetable") }
-            composable("detail/stir-fry") { DetailFragment(navController, "stir-fry") }
-            composable("detail/noodle") { DetailFragment(navController, "noodle") }
-            composable("detail/soup") { DetailFragment(navController, "soup") }
-            composable("detail/signature") { DetailFragment(navController, "signature") }
-            composable("detail/spicy") { DetailFragment(navController, "spicy") }
+            composable("detail/{kind}/{imageName}") { backStackEntry ->
+                val kind = backStackEntry.arguments?.getString("kind") ?: "unknown"
+                val imageName = backStackEntry.arguments?.getString("imageName") ?: "unknown"
+                DetailFragment(navController, kind, imageName)
+            }
+//            composable("detail/vegetable") { DetailFragment(navController, "vegetable") }
+//            composable("detail/stir-fry") { DetailFragment(navController, "stir-fry") }
+//            composable("detail/noodle") { DetailFragment(navController, "noodle") }
+//            composable("detail/soup") { DetailFragment(navController, "soup") }
+//            composable("detail/signature") { DetailFragment(navController, "signature") }
+//            composable("detail/spicy") { DetailFragment(navController, "spicy") }
         }
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
@@ -42,7 +43,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.*
+import androidx.compose.runtime.*
 import com.example.a683project.ui.theme._683projectTheme
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.tasks.await
+import java.net.URL
 
 
 class MainActivity : ComponentActivity() {
@@ -76,6 +82,7 @@ fun GreetingPreview() {
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
+    val storage = FirebaseStorage.getInstance()
     Column {
         Box(
             modifier = Modifier
@@ -112,7 +119,7 @@ fun HomeScreen(navController: NavHostController) {
                         )
                     }
                 }
-                AppBar(navController)
+                AppBar(navController, storage)
             }
         }
         Scaffold { paddingValues ->
@@ -122,9 +129,10 @@ fun HomeScreen(navController: NavHostController) {
 }
 
 @Composable
-fun AppBar(navController: NavHostController) {
+fun AppBar(navController: NavHostController, storage: FirebaseStorage) {
     var searchText by remember { mutableStateOf("") }
     var showMessage by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,38 +141,35 @@ fun AppBar(navController: NavHostController) {
         horizontalArrangement = Arrangement.Center
     ) {
         TextField(
-            value = "",
-            onValueChange = {searchText = it
-                showMessage = searchText.isNotBlank() &&
-                        !searchText.equals("meat", ignoreCase = true) &&
-                        !searchText.equals("vegetable", ignoreCase = true)
-                if (searchText.equals("meat", ignoreCase = true) || searchText.equals("vegetable", ignoreCase = true)) {
-                    navController.navigate("list/$searchText")
-                }
-                            },
+            value = searchText,
+            onValueChange = { searchText = it },
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .weight(1f)
                 .height(56.dp),
             placeholder = { Text("Search food, Vegetable, etc...") },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Rounded.Search,
-                    contentDescription = "Search",
-                    modifier = Modifier.size(24.dp)
-                )
-            },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
+            leadingIcon = { Icon(imageVector = Icons.Rounded.Search, contentDescription = "Search") },
+            colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
             shape = RoundedCornerShape(8.dp)
         )
+        IconButton(
+            onClick = {
+                if (searchText.isNotBlank()) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val results = searchInDescriptions(storage, searchText)
+                        // 处理结果，比如导航到新页面或显示结果
+                        // 示例：navController.navigate("results/${results.joinToString(",")}")
+                    }
+                }
+            }
+        ) {
+            Icon(imageVector = Icons.Rounded.Search, contentDescription = "Search")
+        }
         if (showMessage) {
             Text("Please enter another keyword", color = Color.Red)
         }
     }
 }
+
 
 
 @Composable
@@ -260,6 +265,17 @@ fun FeatureCard(title: String, subtitle: String, imageRes: Int, onClick: () -> U
     }
 }
 
+suspend fun searchInDescriptions(storage: FirebaseStorage, keyword: String): List<String> {
+    val descriptionsRef = storage.reference.child("descriptions")
+    val files = descriptionsRef.listAll().await().items
+
+    return files.mapNotNull { file ->
+        val content = file.downloadUrl.await().toString().let { url ->
+            withContext(Dispatchers.IO) { URL(url).readText() }
+        }
+        if (content.contains(keyword, ignoreCase = true)) file.name else null
+    }
+}
 
 
 
