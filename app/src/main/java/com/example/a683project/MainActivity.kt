@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -83,7 +86,9 @@ fun GreetingPreview() {
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val storage = FirebaseStorage.getInstance()
-    Column {
+    Column(
+        modifier = Modifier.fillMaxSize() // 使整个布局充满屏幕
+    ) {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colors.primary)
@@ -170,16 +175,20 @@ fun AppBar(navController: NavHostController, storage: FirebaseStorage) {
     }
 }
 
-
-
 @Composable
 fun Content(paddingValues: PaddingValues, navController: NavHostController) {
-    Column(modifier = Modifier.padding(paddingValues)) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(paddingValues)
+            .verticalScroll(scrollState)
+    ) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(10.dp)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ImageButton(imageRes = R.drawable.stirfry, contentDescription = "stir-fry") {
@@ -240,19 +249,21 @@ fun Content(paddingValues: PaddingValues, navController: NavHostController) {
         )
     }
 }
+
 @Composable
 fun FeatureCard(title: String, subtitle: String, imageRes: Int, onClick: () -> Unit) {
-    Row(modifier = Modifier
-        .padding(16.dp)
-        .clickable(onClick = onClick)
-        .background(Color.White, RoundedCornerShape(10.dp))
-        .padding(16.dp)) {
-
-        Column(modifier = Modifier.weight(1f)) {
+    Row(
+        modifier = Modifier
+            .padding(16.dp)
+            .clickable(onClick = onClick)
+            .background(Color.White, RoundedCornerShape(10.dp))
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             Text(text = title, style = MaterialTheme.typography.h6)
-            Spacer(modifier = Modifier.height(4.dp))
             Text(text = subtitle, style = MaterialTheme.typography.body2)
-            Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = onClick) {
                 Text(text = "GO>")
             }
@@ -276,6 +287,7 @@ suspend fun searchInDescriptions(storage: FirebaseStorage, keyword: String): Lis
         if (content.contains(keyword, ignoreCase = true)) file.name else null
     }
 }
+
 
 
 

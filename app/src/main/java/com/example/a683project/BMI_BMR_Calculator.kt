@@ -1,5 +1,6 @@
 package com.example.a683project
 
+import android.widget.ScrollView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -42,7 +45,13 @@ fun BMIAndBMRCalculator() {
     val buttonModifier = Modifier
         .padding(8.dp)
         .size(width = 80.dp, height = 60.dp)
-    Column(modifier = Modifier.padding(2.dp)) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(scrollState)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -50,7 +59,9 @@ fun BMIAndBMRCalculator() {
             Button(
                 onClick = { genderState.value = "Male" },
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = if (genderState.value == "Male") MaterialTheme.colors.primary else Color(0xFFFAF9F9)
+                    backgroundColor = if (genderState.value == "Male") MaterialTheme.colors.primary else Color(
+                        0xFFFAF9F9
+                    )
                 ),
                 modifier = buttonModifier
             ) {
@@ -58,14 +69,22 @@ fun BMIAndBMRCalculator() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.male), contentDescription = "Male")
-                    if (genderState.value == "Male") Text("Male", color = Color.White) else Text("Male", color = Color.Black)
+                    Icon(
+                        painter = painterResource(id = R.drawable.male),
+                        contentDescription = "Male"
+                    )
+                    if (genderState.value == "Male") Text(
+                        "Male",
+                        color = Color.White
+                    ) else Text("Male", color = Color.Black)
                 }
             }
             Button(
                 onClick = { genderState.value = "Female" },
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = if (genderState.value == "Female") MaterialTheme.colors.primary else Color(0xFFFAF9F9)
+                    backgroundColor = if (genderState.value == "Female") MaterialTheme.colors.primary else Color(
+                        0xFFFAF9F9
+                    )
                 ),
                 modifier = buttonModifier
             ) {
@@ -73,8 +92,14 @@ fun BMIAndBMRCalculator() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.female), contentDescription = "Female")
-                    if (genderState.value == "Female") Text("Female", color = Color.White) else Text("Female", color = Color.Black)
+                    Icon(
+                        painter = painterResource(id = R.drawable.female),
+                        contentDescription = "Female"
+                    )
+                    if (genderState.value == "Female") Text(
+                        "Female",
+                        color = Color.White
+                    ) else Text("Female", color = Color.Black)
                 }
             }
         }
@@ -124,44 +149,80 @@ fun BMIAndBMRCalculator() {
 
             if (!invalidHeightState.value && !invalidWeightState.value && !invalidAgeState.value) {
                 bmiState.value = calculateBMI(weight!!, height!!)
-                bmrState.value = calculateBMR(weight, height, age!!, genderState.value) * getActivityLevelFactor(selectedActivityLevel)
+                bmrState.value = calculateBMR(
+                    weight,
+                    height,
+                    age!!,
+                    genderState.value
+                ) * getActivityLevelFactor(selectedActivityLevel)
             }
         }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text("Calculate BMI and BMR")
         }
         Spacer(modifier = Modifier.height(8.dp))
         if (invalidHeightState.value) {
-            Text("Invalid height! Please enter a value between 100-250 cm.",
+            Text(
+                "Invalid height! Please enter a value between 100-250 cm.",
                 color = Color.Red,
-                modifier = Modifier.align(Alignment.CenterHorizontally))
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 8.dp) // 调整垂直间距
+            )
         }
         if (invalidWeightState.value) {
-            Text("Invalid weight! Please enter a value between 30-300 kg.",
+            Text(
+                "Invalid weight! Please enter a value between 30-300 kg.",
                 color = Color.Red,
-                modifier = Modifier.align(Alignment.CenterHorizontally))
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 8.dp) // 调整垂直间距
+            )
         }
         if (invalidAgeState.value) {
-            Text("Invalid age! Please enter a value between 10-100 years.",
+            Text(
+                "Invalid age! Please enter a value between 10-100 years.",
                 color = Color.Red,
-                modifier = Modifier.align(Alignment.CenterHorizontally))
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 8.dp) // 调整垂直间距
+            )
         }
         if (invalidInputState.value) {
-            Text("Please enter valid height (100-250 cm), weight (30-300 kg), and age (10-100 years).",
+            Text(
+                "Please enter valid height (100-250 cm), weight (30-300 kg), and age (10-100 years).",
                 color = Color.Red,
-                modifier = Modifier.align(Alignment.CenterHorizontally))
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 8.dp) // 调整垂直间距
+            )
         }
-        if (!invalidInputState.value&&!invalidAgeState.value&&!invalidHeightState.value&&!invalidWeightState.value) {
+        if (!invalidInputState.value && !invalidAgeState.value && !invalidHeightState.value && !invalidWeightState.value) {
             bmiState.value?.let { bmi ->
                 val category = bmiCategory(bmi)
-                Text("Your BMI is: ${bmi.format(2)} ($category)", modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text(
+                    "Your BMI is: ${bmi.format(2)} ($category)",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(vertical = 8.dp) // 调整垂直间距
+                )
             }
             bmrState.value?.let { bmr ->
-                Text("Your BMR is: ${bmr.format(2)} kcal/day", modifier = Modifier.align(Alignment.CenterHorizontally))
-                Text("(Daily minimum caloric consumption)", modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text(
+                    "Your BMR is: ${bmr.format(2)} kcal/day",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+                Text(
+                    "(Daily minimum caloric consumption)",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
             }
         }
     }
 }
+
+
 
 fun calculateBMI(weight: Double, height: Double): Double {
     return weight / ((height / 100) * (height / 100))

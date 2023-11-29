@@ -46,17 +46,17 @@ fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel(), navController: Na
             )
         }
     ) {
-        Column {
-            if (viewModel.favoriteList.isEmpty()) {
-                EmptyFavoritesMessage()
-            } else {
-                LazyColumn {
-                    items(viewModel.favoriteList) { kind ->
-                        ItemRow(navController, kind, storage)
-                    }
-                }
-            }
-        }
+//        Column {
+//            if (viewModel.favoriteList.isEmpty()) {
+//                EmptyFavoritesMessage()
+//            } else {
+//                LazyColumn {
+//                    items(viewModel.favoriteList) { kind ->
+//                        ItemRow(navController, kind, storage)
+//                    }
+//                }
+//            }
+//        }
     }
 }
 

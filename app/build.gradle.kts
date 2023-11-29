@@ -77,6 +77,13 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-appcheck")
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("androidx.compose.ui:ui:1.2.0")
+    implementation("androidx.compose.material:material:1.2.0")
+    implementation("androidx.compose.foundation:foundation:1.2.0")
+    implementation("androidx.compose.runtime:runtime:1.3.3")
+    implementation("androidx.compose.runtime:runtime-livedata:1.3.3")
+    implementation("androidx.compose.runtime:runtime-rxjava2:1.3.3")
     //implementation("com.google.accompanist:accompanist-coil:0.20.0")
 
 
