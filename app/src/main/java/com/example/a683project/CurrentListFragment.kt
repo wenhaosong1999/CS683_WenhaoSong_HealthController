@@ -1,5 +1,6 @@
 package com.example.a683project
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +32,8 @@ import kotlinx.coroutines.tasks.await
 import java.net.URL
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
 import coil.request.CachePolicy
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +41,7 @@ import kotlinx.coroutines.withContext
 import kotlin.math.min
 
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun CurrentListFragment(navController: NavHostController, kind: String) {
     val storage = FirebaseStorage.getInstance()
@@ -53,26 +59,23 @@ fun CurrentListFragment(navController: NavHostController, kind: String) {
         }
     }
 
-    Column {
-        Box(
-            modifier = Modifier
-                .background(MaterialTheme.colors.primary)
-                .fillMaxWidth()
-                .height(160.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Column(modifier = Modifier.fillMaxHeight()) {
-                TopBar()
-                AppBar(navController, storage)
-            }
+    // 使用Scaffold代替Box、TopAppBar和AppBar
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(kind.capitalize(Locale.current), fontWeight = FontWeight.Normal)}
+            )
         }
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 8.dp)
-        ) {
-            items(imageList) { imageUrl ->
-                ClickableImageItem(navController, kind, imageUrl, storage)
+    ) {
+        Column {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp)
+            ) {
+                items(imageList) { imageUrl ->
+                    ClickableImageItem(navController, kind, imageUrl, storage)
+                }
             }
         }
     }
@@ -87,6 +90,8 @@ fun ClickableImageItem(navController: NavHostController, kind: String, imageUrl:
     val painter = rememberImagePainter(
         data = imageUrl,
         builder = {
+            placeholder(R.drawable.chef)
+            error(R.drawable.chef)
             memoryCachePolicy(CachePolicy.ENABLED)
             diskCachePolicy(CachePolicy.ENABLED)
         }

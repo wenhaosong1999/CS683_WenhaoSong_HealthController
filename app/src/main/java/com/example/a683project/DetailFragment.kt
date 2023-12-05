@@ -53,46 +53,74 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.URL
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.tasks.await
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun DetailFragment(navController: NavHostController, kind: String, name:String) {
+fun DetailFragment(navController: NavHostController, kind: String, name: String) {
     val viewModel: FavoriteViewModel = viewModel()
+    var imageUrl by remember { mutableStateOf<String?>(null) }
+    var textContent by remember { mutableStateOf("Loading description...") }
+    val favoriteList by viewModel.favoriteList.observeAsState(initial = emptyList())
+    val isFavorited = favoriteList.any { it.kind == kind && it.name == name }
+
+    LaunchedEffect(kind, name) {
+        try {
+            imageUrl = fetchImageUrl(kind, name) ?: "Failed to load image."
+        } catch (e: Exception) {
+            imageUrl = "Failed to load image."
+            Log.e("DetailFragment", "Error fetching image URL", e)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(kind.capitalize(Locale.current)) },
+                title = { Text(name.substringBeforeLast(".png").capitalize(Locale.current), fontWeight = FontWeight.Normal) },
                 actions = {
-                    IconButton(onClick = { viewModel.toggleFavorite(kind) }) {
+                    IconButton(onClick = {
+                        val item = FavoriteItem(kind, name, imageUrl, textContent, !isFavorited)
+                        viewModel.toggleFavorite(item)
+                    }) {
                         Icon(
-                            imageVector = if (kind in viewModel.favoriteList) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = "Favorite"
+                            imageVector = if (isFavorited) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = "favorite"
                         )
                     }
                 }
             )
         }
     ) { paddingValues ->
-        DetailContent(kind, name, paddingValues)
+        DetailContent(kind, name, paddingValues, imageUrl, textContent) {
+            imageUrl = it.first
+            textContent = it.second
+        }
     }
 }
 
+
 @Composable
-fun DetailContent(kind: String, name: String, paddingValues: PaddingValues) {
-    var imageUrl by remember { mutableStateOf<String?>(null) }
-    var textContent by remember { mutableStateOf("Loading description...") }
+fun DetailContent(
+    kind: String,
+    name: String,
+    paddingValues: PaddingValues,
+    initialImageUrl: String?,
+    initialTextContent: String,
+    updateData: (Pair<String?, String>) -> Unit
+) {
+    var imageUrl by remember { mutableStateOf(initialImageUrl) }
+    var textContent by remember { mutableStateOf(initialTextContent) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(kind, name) {
-
         scope.launch {
-            imageUrl = fetchImageUrl(kind, name)
+            val newImageUrl = fetchImageUrl(kind, name)
+            imageUrl = newImageUrl
 
             val textFileName = name.substringBeforeLast(".png") + ".txt"
             Log.d("ItemRow", "URL: $textFileName")
             try {
-                val textRef =
-                    FirebaseStorage.getInstance().reference.child("descriptions/$kind/$textFileName")
+                val textRef = FirebaseStorage.getInstance().reference.child("descriptions/$kind/$textFileName")
                 val url = textRef.downloadUrl.await().toString()
                 textContent = withContext(Dispatchers.IO) {
                     URL(url).readText()
@@ -110,8 +138,10 @@ fun DetailContent(kind: String, name: String, paddingValues: PaddingValues) {
             .padding(paddingValues)
     ) {
         item {
-            imageUrl?.let {
-                val painter = rememberImagePainter(data = it)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            imageUrl?.let { url ->
+                val painter = rememberImagePainter(data = url)
                 Image(
                     painter = painter,
                     contentDescription = "Top Image",
@@ -120,7 +150,9 @@ fun DetailContent(kind: String, name: String, paddingValues: PaddingValues) {
                         .height(200.dp)
                 )
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = textContent,
                 textAlign = TextAlign.Center,
@@ -130,7 +162,9 @@ fun DetailContent(kind: String, name: String, paddingValues: PaddingValues) {
             )
         }
     }
+
 }
+
 
 suspend fun fetchImageUrl(kind: String, name: String): String? {
     val storageReference = FirebaseStorage.getInstance().reference.child("images/$kind/$name")

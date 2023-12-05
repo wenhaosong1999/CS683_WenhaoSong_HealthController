@@ -81,9 +81,10 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.2.0")
     implementation("androidx.compose.material:material:1.2.0")
     implementation("androidx.compose.foundation:foundation:1.2.0")
-    implementation("androidx.compose.runtime:runtime:1.3.3")
-    implementation("androidx.compose.runtime:runtime-livedata:1.3.3")
-    implementation("androidx.compose.runtime:runtime-rxjava2:1.3.3")
+    implementation("androidx.compose.runtime:runtime:1.5.4")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
+    implementation("androidx.compose.runtime:runtime-rxjava2:1.5.4")
+    implementation("com.google.code.gson:gson:2.8.6")
     //implementation("com.google.accompanist:accompanist-coil:0.20.0")
 
 
