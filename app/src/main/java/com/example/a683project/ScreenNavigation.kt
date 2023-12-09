@@ -1,5 +1,6 @@
 package com.example.a683project
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -47,12 +48,11 @@ fun ScreenNavigation() {
                 val imageName = backStackEntry.arguments?.getString("imageName") ?: "unknown"
                 DetailFragment(navController, kind, imageName)
             }
-//            composable("detail/vegetable") { DetailFragment(navController, "vegetable") }
-//            composable("detail/stir-fry") { DetailFragment(navController, "stir-fry") }
-//            composable("detail/noodle") { DetailFragment(navController, "noodle") }
-//            composable("detail/soup") { DetailFragment(navController, "soup") }
-//            composable("detail/signature") { DetailFragment(navController, "signature") }
-//            composable("detail/spicy") { DetailFragment(navController, "spicy") }
+            composable("search/{searchText}") { backStackEntry ->
+                val searchText = backStackEntry.arguments?.getString("searchText") ?: ""
+                Log.d("SearchLog", "Search Text: $searchText")
+                CurrentListFragment(navController, "search:$searchText")
+            }
         }
     }
 }

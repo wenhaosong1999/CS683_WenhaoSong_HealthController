@@ -98,7 +98,6 @@ fun DetailFragment(navController: NavHostController, kind: String, name: String)
     }
 }
 
-
 @Composable
 fun DetailContent(
     kind: String,
@@ -164,7 +163,6 @@ fun DetailContent(
     }
 
 }
-
 
 suspend fun fetchImageUrl(kind: String, name: String): String? {
     val storageReference = FirebaseStorage.getInstance().reference.child("images/$kind/$name")

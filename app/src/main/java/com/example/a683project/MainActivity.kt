@@ -82,12 +82,11 @@ fun GreetingPreview() {
     }
 }
 
-
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val storage = FirebaseStorage.getInstance()
     Column(
-        modifier = Modifier.fillMaxSize() // 使整个布局充满屏幕
+        modifier = Modifier.fillMaxSize()
     ) {
         Box(
             modifier = Modifier
@@ -150,25 +149,22 @@ fun AppBar(navController: NavHostController, storage: FirebaseStorage) {
             onValueChange = { searchText = it },
             modifier = Modifier
                 .weight(1f)
-                .height(56.dp),
-            placeholder = { Text("Search food, Vegetable, etc...") },
-            leadingIcon = { Icon(imageVector = Icons.Rounded.Search, contentDescription = "Search") },
+                .height(56.dp)
+                .padding(start = 20.dp)
+                .padding(end = 20.dp),
+            placeholder = { Text("Search food, meat, vegetable, etc...") },
+            leadingIcon = { IconButton(
+                onClick = {
+                    if (searchText.isNotBlank()) {
+                        navController.navigate("search/$searchText")
+                    }
+                }
+            ) {
+                Icon(imageVector = Icons.Rounded.Search, contentDescription = "Search")
+            } },
             colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
             shape = RoundedCornerShape(8.dp)
         )
-        IconButton(
-            onClick = {
-                if (searchText.isNotBlank()) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        val results = searchInDescriptions(storage, searchText)
-                        // 处理结果，比如导航到新页面或显示结果
-                        // 示例：navController.navigate("results/${results.joinToString(",")}")
-                    }
-                }
-            }
-        ) {
-            Icon(imageVector = Icons.Rounded.Search, contentDescription = "Search")
-        }
         if (showMessage) {
             Text("Please enter another keyword", color = Color.Red)
         }

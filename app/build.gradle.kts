@@ -85,6 +85,8 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
     implementation("androidx.compose.runtime:runtime-rxjava2:1.5.4")
     implementation("com.google.code.gson:gson:2.8.6")
+    //implementation("com.google.android.gms:play-services-safetynet:18.0.1")
+    //implementation("com.google.android.play:integrity:1.3.0")
     //implementation("com.google.accompanist:accompanist-coil:0.20.0")
 
 

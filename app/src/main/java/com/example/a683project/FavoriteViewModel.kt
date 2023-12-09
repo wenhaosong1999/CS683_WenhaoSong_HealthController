@@ -24,7 +24,7 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
     private val sharedPreferences = application.getSharedPreferences("favorites_pref", Context.MODE_PRIVATE)
     private val gson = Gson()
 
-    private val _favoriteList = MutableLiveData<List<FavoriteItem>>(loadFavorites())
+    private val _favoriteList = MutableLiveData(loadFavorites())
     val favoriteList: LiveData<List<FavoriteItem>> = _favoriteList
 
     private fun loadFavorites(): List<FavoriteItem> {
@@ -37,9 +37,7 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
         val editor = sharedPreferences.edit()
         val favoritesJson = gson.toJson(favorites)
         editor.putString("favorites", favoritesJson)
-
-        // apply() 是异步的，commit() 是同步的
-        editor.apply() // 或者，如果需要立即的持久化，可以使用 editor.commit()
+        editor.apply()
     }
 
     fun toggleFavorite(item: FavoriteItem) {
@@ -52,11 +50,11 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
         }
         saveFavorites(currentFavorites)
         _favoriteList.value = currentFavorites
-        Log.d("FavoriteViewModel", "Favorite list updated: $currentFavorites")
-        val savedFavoritesJson = sharedPreferences.getString("favorites", "[]")
-        Log.d("FavoriteViewModel", "Favorites in SharedPreferences: $savedFavoritesJson")
     }
 
+    fun refreshFavorites() {
+        _favoriteList.value = loadFavorites()
+    }
 }
 
 

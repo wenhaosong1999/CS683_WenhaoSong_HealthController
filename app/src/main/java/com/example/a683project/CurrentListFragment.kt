@@ -1,6 +1,7 @@
 package com.example.a683project
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,22 +34,36 @@ import java.net.URL
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
 import coil.request.CachePolicy
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.min
-
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun CurrentListFragment(navController: NavHostController, kind: String) {
     val storage = FirebaseStorage.getInstance()
     val imageList = remember { mutableStateListOf<String>() }
+    val isLoading = remember { mutableStateOf(true) }
+    val hasResults = remember { mutableStateOf(true) }
 
     LaunchedEffect(kind) {
-        if (kind == "see all") {
+        isLoading.value = true
+        if (kind.startsWith("search:")) {
+            val searchTerm = kind.removePrefix("search:")
+            val results = withContext(Dispatchers.IO) { searchInIngredients(storage, searchTerm) }
+            if (results.isNotEmpty()) {
+                hasResults.value = true
+                imageList.clear()
+                imageList.addAll(results)
+            } else {
+                hasResults.value = false
+            }
+        } else if (kind == "see all") {
             imageList.addAll(fetchImageUrlsFromFolder("meat"))
             imageList.addAll(fetchImageUrlsFromFolder("vegetable"))
             imageList.addAll(fetchImageUrlsFromFolder("soup"))
@@ -57,24 +72,29 @@ fun CurrentListFragment(navController: NavHostController, kind: String) {
         } else {
             imageList.addAll(fetchImageUrlsFromFolder(kind))
         }
+        isLoading.value = false
     }
-
-    // 使用Scaffold代替Box、TopAppBar和AppBar
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(kind.capitalize(Locale.current), fontWeight = FontWeight.Normal)}
+                title = { Text(kind.capitalize(Locale.current), fontWeight = FontWeight.Normal) }
             )
         }
     ) {
-        Column {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 8.dp)
-            ) {
-                items(imageList) { imageUrl ->
-                    ClickableImageItem(navController, kind, imageUrl, storage)
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (isLoading.value) {
+                Text("Loading...", modifier = Modifier.align(Alignment.Center))
+            } else if (!hasResults.value) {
+                Text("No matching recipes", modifier = Modifier.align(Alignment.Center), fontStyle = FontStyle.Italic)
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 8.dp)
+                ) {
+                    items(imageList) { imageUrl ->
+                        ClickableImageItem(navController, kind, imageUrl, storage)
+                    }
                 }
             }
         }
@@ -83,7 +103,9 @@ fun CurrentListFragment(navController: NavHostController, kind: String) {
 
 @Composable
 fun ClickableImageItem(navController: NavHostController, kind: String, imageUrl: String, storage: FirebaseStorage) {
-    val actualKind = if (kind == "see all") determineKindFromImageUrl(imageUrl) else kind
+    Log.d("ClickableImageItem", "kind:$kind, imageUrl:$imageUrl")
+    val actualKind = if (kind == "see all"){ determineKindFromImageUrl(imageUrl)} else if (kind.startsWith("search:")){imageUrl.substringAfterLast("images%2F").substringBefore("%2")} else kind
+    Log.d("ClickableImageItem", "actualKind:$actualKind, imageUrl:$imageUrl")
     val imageName = imageUrl.substringAfterLast("%2F").substringBefore('?')
     var ingredients by remember { mutableStateOf("") }
     val title =imageName.substringBefore(".png")
@@ -103,6 +125,7 @@ fun ClickableImageItem(navController: NavHostController, kind: String, imageUrl:
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(horizontal = 20.dp)
+            .padding(top = 8.dp)
     ) {
         Image(
             painter = painter,
@@ -191,3 +214,57 @@ fun determineKindFromImageUrl(imageUrl: String): String {
         else -> "unknown"
     }
 }
+
+suspend fun searchInIngredients(storage: FirebaseStorage, searchTerm: String): List<String> {
+    val ingredientsRef = storage.reference.child("ingredients")
+    Log.d("Search", "Searching in: ingredients")
+    return searchInDirectory(storage, ingredientsRef, searchTerm)
+}
+
+suspend fun searchInDirectory(storage: FirebaseStorage, directoryRef: StorageReference, searchTerm: String): List<String> {
+    val urls = mutableListOf<String>()
+    val listResult = directoryRef.listAll().await()
+
+    listResult.prefixes.forEach { subDir ->
+        Log.d("Search", "Found subdirectory: ${subDir.path}")
+    }
+    listResult.items.forEach { fileRef ->
+        Log.d("Search", "Found file: ${fileRef.path}")
+        if (fileRef.name.endsWith(".txt")) {
+            val content = downloadFileContent(fileRef) // 获取文件内容
+            if (content.contains(searchTerm, ignoreCase = true)) {
+                val imageName = fileRef.name.replace(".txt", ".png")
+                val subDirPath = fileRef.path.substringBeforeLast('/').substringAfterLast("ingredients/")
+                Log.d("Search", "Found subdirectory: $subDirPath")
+                processImage(subDirPath, imageName, urls, storage)
+            }
+        }
+    }
+    for (subDir in listResult.prefixes) {
+        urls.addAll(searchInDirectory(storage, subDir, searchTerm))
+    }
+    return urls
+}
+
+suspend fun downloadFileContent(fileRef: StorageReference): String {
+    return withContext(Dispatchers.IO) {
+        try {
+            val bytes = fileRef.getBytes(Long.MAX_VALUE).await()
+            String(bytes, Charsets.UTF_8)
+        } catch (e: Exception) {
+            ""
+        }
+    }
+}
+
+suspend fun processImage(subDirPath: String, imageName: String, urls: MutableList<String>, storage: FirebaseStorage) {
+    val imageRef = storage.reference.child("images/$subDirPath/$imageName")
+    try {
+        val url = imageRef.downloadUrl.await().toString()
+        urls.add(url)
+        Log.d("Search", "Match found, image URL: $url")
+    } catch (e: Exception) {
+        Log.e("Search", "Error getting image URL for $imageName", e)
+    }
+}
+

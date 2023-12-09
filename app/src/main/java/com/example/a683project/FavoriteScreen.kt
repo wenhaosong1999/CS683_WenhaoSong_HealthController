@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -38,26 +39,51 @@ import androidx.compose.ui.Alignment
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.rememberImagePainter
 import coil.request.CachePolicy
 import com.google.firebase.storage.FirebaseStorage
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "RememberReturnType")
 @Composable
 fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel(), navController: NavHostController) {
     val storage = FirebaseStorage.getInstance()
     val favoriteList by viewModel.favoriteList.observeAsState(initial = emptyList())
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleEventObserver = remember {
+        LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME && navController.currentDestination?.route == "favorite") {
+                viewModel.refreshFavorites()
+            }
+        }
+    }
 
+    DisposableEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.addObserver(lifecycleEventObserver)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(lifecycleEventObserver)
+        }
+    }
+    LaunchedEffect(currentRoute) {
+        if (currentRoute == "personal") {
+            viewModel.refreshFavorites()
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Favorite Items", fontWeight = FontWeight.Normal) }
+                title = { Text("Favorite", fontWeight = FontWeight.Normal) }
             )
         }
     ) {
@@ -88,36 +114,7 @@ fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel(), navController: Na
 @Composable
 fun EmptyFavoritesMessage() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("No items have been favorited yet.", fontStyle = FontStyle.Italic)
-    }
-}
-
-
-
-@Composable
-fun TopBar() {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Image(
-            painter = painterResource(id = R.drawable.chef),
-            contentDescription = "logo",
-            modifier = Modifier.size(80.dp)
-        )
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(start = 16.dp)
-        ) {
-            Text(
-                text = "Health Controller",
-                color = Color.White,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "The first step to be a chef",
-                color = Color.White,
-                fontSize = 16.sp
-            )
-        }
+        Text("No recipe has been favorited yet", fontStyle = FontStyle.Italic)
     }
 }
 
@@ -153,6 +150,7 @@ fun FavoriteClickableImageItem(
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(horizontal = 20.dp)
+            .padding(top = 8.dp)
             .clickable { navController.navigate("detail/$actualKind/$imageName") }
     ) {
         Image(

@@ -1,6 +1,7 @@
 package com.example.a683project
 
 import android.widget.ScrollView
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -61,7 +62,8 @@ fun BMIAndBMRCalculator() {
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = if (genderState.value == "Male") MaterialTheme.colors.primary else Color(
                         0xFFFAF9F9
-                    )
+                    ),
+
                 ),
                 modifier = buttonModifier
             ) {
@@ -69,9 +71,12 @@ fun BMIAndBMRCalculator() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Icon(
+                    Image(
                         painter = painterResource(id = R.drawable.male),
-                        contentDescription = "Male"
+                        contentDescription = "Male",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .fillMaxWidth()
                     )
                     if (genderState.value == "Male") Text(
                         "Male",
@@ -92,9 +97,12 @@ fun BMIAndBMRCalculator() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Icon(
+                    Image(
                         painter = painterResource(id = R.drawable.female),
-                        contentDescription = "Female"
+                        contentDescription = "Female",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .fillMaxWidth()
                     )
                     if (genderState.value == "Female") Text(
                         "Female",
@@ -106,7 +114,7 @@ fun BMIAndBMRCalculator() {
         OutlinedTextField(
             value = ageState.value,
             onValueChange = { ageState.value = it },
-            label = { Text("Enter your age (years)") },
+            label = { Text("Enter your age (10-100 years)") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
@@ -114,7 +122,7 @@ fun BMIAndBMRCalculator() {
         OutlinedTextField(
             value = heightState.value,
             onValueChange = { heightState.value = it },
-            label = { Text("Enter your height (cm)") },
+            label = { Text("Enter your height (100-250 cm)") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
@@ -122,7 +130,7 @@ fun BMIAndBMRCalculator() {
         OutlinedTextField(
             value = weightState.value,
             onValueChange = { weightState.value = it },
-            label = { Text("Enter your weight (kg)") },
+            label = { Text("Enter your weight (30-300 kg)") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
@@ -166,7 +174,7 @@ fun BMIAndBMRCalculator() {
                 color = Color.Red,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 8.dp) // 调整垂直间距
+                    .padding(vertical = 8.dp)
             )
         }
         if (invalidWeightState.value) {
@@ -175,7 +183,7 @@ fun BMIAndBMRCalculator() {
                 color = Color.Red,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 8.dp) // 调整垂直间距
+                    .padding(vertical = 8.dp)
             )
         }
         if (invalidAgeState.value) {
