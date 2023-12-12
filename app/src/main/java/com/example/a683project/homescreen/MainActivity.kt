@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -213,7 +214,7 @@ fun Content(paddingValues: PaddingValues, navController: NavHostController) {
                 .padding(16.dp)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                ImageButton(imageRes = R.drawable.noodle, contentDescription = "noodle") {
+                ImageButton(imageRes = R.drawable.noodles, contentDescription = "noodle") {
                     navController.navigate("list/noodle")
                 }
                 Text("Noodle")
@@ -234,14 +235,14 @@ fun Content(paddingValues: PaddingValues, navController: NavHostController) {
         FeatureCard(
             title = "Signature Recipes",
             subtitle = "Recommendation",
-            imageRes = R.drawable.stirfry,
+            imageRes = R.drawable.signature,
             onClick = {navController.navigate("signature")}
         )
         FeatureCard(
-            title = "Spicy Recipes",
+            title = "Fat-loss Recipes",
             subtitle = "Recommendation",
-            imageRes = R.drawable.stirfry,
-            onClick = {navController.navigate("spicy")}
+            imageRes = R.drawable.fatloss,
+            onClick = {navController.navigate("fatloss")}
         )
     }
 }
@@ -253,6 +254,7 @@ fun FeatureCard(title: String, subtitle: String, imageRes: Int, onClick: () -> U
             .padding(16.dp)
             .clickable(onClick = onClick)
             .background(Color.White, RoundedCornerShape(10.dp))
+            .border(2.dp, Color.LightGray, RoundedCornerShape(10.dp))
             .padding(16.dp)
     ) {
         Column(
@@ -271,6 +273,7 @@ fun FeatureCard(title: String, subtitle: String, imageRes: Int, onClick: () -> U
         )
     }
 }
+
 
 suspend fun searchInDescriptions(storage: FirebaseStorage, keyword: String): List<String> {
     val descriptionsRef = storage.reference.child("descriptions")

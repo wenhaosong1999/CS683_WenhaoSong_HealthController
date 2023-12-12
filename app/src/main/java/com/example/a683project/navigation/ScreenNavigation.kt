@@ -41,7 +41,7 @@ fun ScreenNavigation() {
             composable("list/soup") { CurrentListFragment(navController, "soup") }
             composable("list/noodle") { CurrentListFragment(navController,"noodle") }
             composable("signature") { CurrentListFragment(navController,"signature") }
-            composable("spicy") { CurrentListFragment(navController,"spicy") }
+            composable("fatloss") { CurrentListFragment(navController,"fatloss") }
             composable("list/see all") { CurrentListFragment(navController, "see all") }
             composable("detail/{kind}/{imageName}") { backStackEntry ->
                 val kind = backStackEntry.arguments?.getString("kind") ?: "unknown"
@@ -50,7 +50,6 @@ fun ScreenNavigation() {
             }
             composable("search/{searchText}") { backStackEntry ->
                 val searchText = backStackEntry.arguments?.getString("searchText") ?: ""
-                Log.d("SearchLog", "Search Text: $searchText")
                 CurrentListFragment(navController, "search:$searchText")
             }
         }

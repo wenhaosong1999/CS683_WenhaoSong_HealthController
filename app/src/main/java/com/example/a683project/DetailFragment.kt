@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
@@ -54,7 +55,12 @@ import java.io.IOException
 import java.net.URL
 import com.google.firebase.storage.FirebaseStorage
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun DetailFragment(navController: NavHostController, kind: String, name: String) {
@@ -134,7 +140,7 @@ fun DetailContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(paddingValues)
+            .padding(horizontal = 16.dp, vertical = paddingValues.calculateTopPadding()) // Added horizontal padding
     ) {
         item {
             Spacer(modifier = Modifier.height(16.dp))
@@ -152,17 +158,54 @@ fun DetailContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = textContent,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            )
+            val lines = textContent.split("\n")
+            var inIngredients = false
+            var inInstructions = false
+            var instructionNumber = 1
+
+            lines.forEach { line ->
+                when {
+                    line.startsWith("Ingredients:") -> {
+                        inIngredients = true
+                        inInstructions = false
+                        Text(text = line, fontWeight = FontWeight.Bold)
+                    }
+                    line.startsWith("Instructions:") -> {
+                        inInstructions = true
+                        inIngredients = false
+                        Text(text = line, fontWeight = FontWeight.Bold)
+                    }
+                    inIngredients -> {
+                        IngredientLine(line)
+                    }
+                    inInstructions -> {
+                        Text(text = "$instructionNumber. $line")
+                        instructionNumber++
+                    }
+                    else -> {
+                        Text(text = line)
+                    }
+                }
+            }
         }
     }
-
 }
+
+@Composable
+fun IngredientLine(line: String) {
+    val parts = line.split("(", limit = 2)
+    val leftText = parts[0].trim()
+    val rightText = if (parts.size > 1) "(${parts[1]}" else ""
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = leftText, modifier = Modifier.weight(1f))
+        Text(text = rightText)
+    }
+}
+
 
 suspend fun fetchImageUrl(kind: String, name: String): String? {
     val storageReference = FirebaseStorage.getInstance().reference.child("images/$kind/$name")
@@ -173,6 +216,8 @@ suspend fun fetchImageUrl(kind: String, name: String): String? {
         null
     }
 }
+
+
 
 
 

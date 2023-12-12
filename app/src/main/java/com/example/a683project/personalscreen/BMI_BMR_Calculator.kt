@@ -201,7 +201,7 @@ fun BMIAndBMRCalculator() {
                 color = Color.Red,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 8.dp) // 调整垂直间距
+                    .padding(vertical = 8.dp)
             )
         }
         if (!invalidInputState.value && !invalidAgeState.value && !invalidHeightState.value && !invalidWeightState.value) {
@@ -211,7 +211,7 @@ fun BMIAndBMRCalculator() {
                     "Your BMI is: ${bmi.format(2)} ($category)",
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(vertical = 8.dp) // 调整垂直间距
+                        .padding(vertical = 8.dp)
                 )
             }
             bmrState.value?.let { bmr ->
@@ -229,8 +229,6 @@ fun BMIAndBMRCalculator() {
         }
     }
 }
-
-
 
 fun calculateBMI(weight: Double, height: Double): Double {
     return weight / ((height / 100) * (height / 100))

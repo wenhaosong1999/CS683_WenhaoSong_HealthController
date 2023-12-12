@@ -69,6 +69,7 @@ fun CurrentListFragment(navController: NavHostController, kind: String) {
             imageList.addAll(fetchImageUrlsFromFolder("soup"))
             imageList.addAll(fetchImageUrlsFromFolder("stir-fry"))
             imageList.addAll(fetchImageUrlsFromFolder("noodle"))
+            imageList.addAll(fetchImageUrlsFromFolder("fatloss"))
         } else {
             imageList.addAll(fetchImageUrlsFromFolder(kind))
         }
@@ -147,7 +148,7 @@ fun ClickableImageItem(navController: NavHostController, kind: String, imageUrl:
             )
             if (ingredients.isNotEmpty()) {
                 LimitedText(
-                    text = "Ingredients: $ingredients",
+                    text = "$ingredients",
                     style = MaterialTheme.typography.body2.copy(color = Color.Gray),
                     maxChars = 1
                 )
@@ -211,6 +212,8 @@ fun determineKindFromImageUrl(imageUrl: String): String {
         "soup" in imageUrl -> "soup"
         "stir-fry" in imageUrl -> "stir-fry"
         "noodle" in imageUrl -> "noodle"
+        "signature" in imageUrl -> "signature"
+        "fatloss" in imageUrl -> "fatloss"
         else -> "unknown"
     }
 }
@@ -226,12 +229,18 @@ suspend fun searchInDirectory(storage: FirebaseStorage, directoryRef: StorageRef
     val listResult = directoryRef.listAll().await()
 
     listResult.prefixes.forEach { subDir ->
-        Log.d("Search", "Found subdirectory: ${subDir.path}")
+        if (!subDir.path.endsWith("/signature")) { // 检查是否是 "signature" 目录
+            Log.d("Search", "Found subdirectory: ${subDir.path}")
+            urls.addAll(searchInDirectory(storage, subDir, searchTerm))
+        } else {
+            Log.d("Search", "Skipping 'signature' directory")
+        }
     }
+
     listResult.items.forEach { fileRef ->
         Log.d("Search", "Found file: ${fileRef.path}")
         if (fileRef.name.endsWith(".txt")) {
-            val content = downloadFileContent(fileRef) // 获取文件内容
+            val content = downloadFileContent(fileRef)
             if (content.contains(searchTerm, ignoreCase = true)) {
                 val imageName = fileRef.name.replace(".txt", ".png")
                 val subDirPath = fileRef.path.substringBeforeLast('/').substringAfterLast("ingredients/")
@@ -240,9 +249,7 @@ suspend fun searchInDirectory(storage: FirebaseStorage, directoryRef: StorageRef
             }
         }
     }
-    for (subDir in listResult.prefixes) {
-        urls.addAll(searchInDirectory(storage, subDir, searchTerm))
-    }
+
     return urls
 }
 
