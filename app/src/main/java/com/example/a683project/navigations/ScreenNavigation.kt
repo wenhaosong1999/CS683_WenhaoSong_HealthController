@@ -1,6 +1,5 @@
-package com.example.a683project
+package com.example.a683project.navigations
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -16,6 +15,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.a683project.HomeScreen
+import com.example.a683project.R
+import com.example.a683project.fragments.CurrentListFragment
+import com.example.a683project.fragments.DetailFragment
+import com.example.a683project.fragments.FavoriteScreen
+import com.example.a683project.fragments.PersonalScreen
 
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {

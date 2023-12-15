@@ -1,4 +1,4 @@
-package com.example.a683project
+package com.example.a683project.navigations
 
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem

@@ -1,17 +1,13 @@
-package com.example.a683project
+package com.example.a683project.fragments
 
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,6 +34,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
 import coil.request.CachePolicy
+import com.example.a683project.R
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -105,7 +102,8 @@ fun CurrentListFragment(navController: NavHostController, kind: String) {
 @Composable
 fun ClickableImageItem(navController: NavHostController, kind: String, imageUrl: String, storage: FirebaseStorage) {
     Log.d("ClickableImageItem", "kind:$kind, imageUrl:$imageUrl")
-    val actualKind = if (kind == "see all"){ determineKindFromImageUrl(imageUrl)} else if (kind.startsWith("search:")){imageUrl.substringAfterLast("images%2F").substringBefore("%2")} else kind
+    val actualKind = if (kind == "see all"){ determineKindFromImageUrl(imageUrl)
+    } else if (kind.startsWith("search:")){imageUrl.substringAfterLast("images%2F").substringBefore("%2")} else kind
     Log.d("ClickableImageItem", "actualKind:$actualKind, imageUrl:$imageUrl")
     val imageName = imageUrl.substringAfterLast("%2F").substringBefore('?')
     var ingredients by remember { mutableStateOf("") }

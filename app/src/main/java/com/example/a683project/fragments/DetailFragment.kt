@@ -1,10 +1,7 @@
-package com.example.a683project
+package com.example.a683project.fragments
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -30,37 +25,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.net.URL
 import com.google.firebase.storage.FirebaseStorage
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.sp
+import com.example.a683project.viewmodel.FavoriteViewModel
 
 @Composable
 fun DetailFragment(navController: NavHostController, kind: String, name: String) {
@@ -75,7 +55,6 @@ fun DetailFragment(navController: NavHostController, kind: String, name: String)
             imageUrl = fetchImageUrl(kind, name) ?: "Failed to load image."
         } catch (e: Exception) {
             imageUrl = "Failed to load image."
-            Log.e("DetailFragment", "Error fetching image URL", e)
         }
     }
 
@@ -132,7 +111,6 @@ fun DetailContent(
                 }
             } catch (e: Exception) {
                 textContent = "Failed to load description."
-                Log.e("DetailContent", "Error loading text content", e)
             }
         }
     }
@@ -140,7 +118,7 @@ fun DetailContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = paddingValues.calculateTopPadding()) // Added horizontal padding
+            .padding(horizontal = 16.dp, vertical = paddingValues.calculateTopPadding())
     ) {
         item {
             Spacer(modifier = Modifier.height(16.dp))
@@ -205,7 +183,6 @@ fun IngredientLine(line: String) {
         Text(text = rightText)
     }
 }
-
 
 suspend fun fetchImageUrl(kind: String, name: String): String? {
     val storageReference = FirebaseStorage.getInstance().reference.child("images/$kind/$name")
