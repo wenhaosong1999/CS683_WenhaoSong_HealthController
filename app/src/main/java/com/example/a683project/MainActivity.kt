@@ -84,7 +84,6 @@ fun GreetingPreview() {
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
-    val storage = FirebaseStorage.getInstance()
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -123,7 +122,7 @@ fun HomeScreen(navController: NavHostController) {
                         )
                     }
                 }
-                AppBar(navController, storage)
+                SearchBar(navController)
             }
         }
         Scaffold { paddingValues ->
@@ -133,10 +132,8 @@ fun HomeScreen(navController: NavHostController) {
 }
 
 @Composable
-fun AppBar(navController: NavHostController, storage: FirebaseStorage) {
+fun SearchBar(navController: NavHostController) {
     var searchText by remember { mutableStateOf("") }
-    var showMessage by remember { mutableStateOf(false) }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,12 +159,9 @@ fun AppBar(navController: NavHostController, storage: FirebaseStorage) {
             ) {
                 Icon(imageVector = Icons.Rounded.Search, contentDescription = "Search")
             } },
-            colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent),
+            colors = TextFieldDefaults.textFieldColors(backgroundColor=Color.White,focusedIndicatorColor=Color.Transparent,unfocusedIndicatorColor=Color.Transparent),
             shape = RoundedCornerShape(8.dp)
         )
-        if (showMessage) {
-            Text("Please enter another keyword", color = Color.Red)
-        }
     }
 }
 
@@ -273,18 +267,6 @@ fun FeatureCard(title: String, subtitle: String, imageRes: Int, onClick: () -> U
     }
 }
 
-
-suspend fun searchInDescriptions(storage: FirebaseStorage, keyword: String): List<String> {
-    val descriptionsRef = storage.reference.child("descriptions")
-    val files = descriptionsRef.listAll().await().items
-
-    return files.mapNotNull { file ->
-        val content = file.downloadUrl.await().toString().let { url ->
-            withContext(Dispatchers.IO) { URL(url).readText() }
-        }
-        if (content.contains(keyword, ignoreCase = true)) file.name else null
-    }
-}
 
 
 

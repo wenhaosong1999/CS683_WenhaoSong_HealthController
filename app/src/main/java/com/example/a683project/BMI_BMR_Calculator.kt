@@ -192,7 +192,7 @@ fun BMIAndBMRCalculator() {
                 color = Color.Red,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 8.dp) // 调整垂直间距
+                    .padding(vertical = 8.dp)
             )
         }
         if (invalidInputState.value) {

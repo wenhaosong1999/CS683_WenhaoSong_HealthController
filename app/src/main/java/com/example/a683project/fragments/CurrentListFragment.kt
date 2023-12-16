@@ -218,7 +218,6 @@ fun determineKindFromImageUrl(imageUrl: String): String {
 
 suspend fun searchInIngredients(storage: FirebaseStorage, searchTerm: String): List<String> {
     val ingredientsRef = storage.reference.child("ingredients")
-    Log.d("Search", "Searching in: ingredients")
     return searchInDirectory(storage, ingredientsRef, searchTerm)
 }
 
@@ -227,8 +226,7 @@ suspend fun searchInDirectory(storage: FirebaseStorage, directoryRef: StorageRef
     val listResult = directoryRef.listAll().await()
 
     listResult.prefixes.forEach { subDir ->
-        if (!subDir.path.endsWith("/signature")) { // 检查是否是 "signature" 目录
-            Log.d("Search", "Found subdirectory: ${subDir.path}")
+        if (!subDir.path.endsWith("/signature")) {
             urls.addAll(searchInDirectory(storage, subDir, searchTerm))
         } else {
             Log.d("Search", "Skipping 'signature' directory")
@@ -267,7 +265,6 @@ suspend fun processImage(subDirPath: String, imageName: String, urls: MutableLis
     try {
         val url = imageRef.downloadUrl.await().toString()
         urls.add(url)
-        Log.d("Search", "Match found, image URL: $url")
     } catch (e: Exception) {
         Log.e("Search", "Error getting image URL for $imageName", e)
     }

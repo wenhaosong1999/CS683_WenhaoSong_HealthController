@@ -40,6 +40,7 @@ import java.net.URL
 import com.google.firebase.storage.FirebaseStorage
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.font.FontWeight
+import com.example.a683project.viewmodel.FavoriteItem
 import com.example.a683project.viewmodel.FavoriteViewModel
 
 @Composable
@@ -100,9 +101,9 @@ fun DetailContent(
         scope.launch {
             val newImageUrl = fetchImageUrl(kind, name)
             imageUrl = newImageUrl
-
+            Log.d("URL", "URL: $imageUrl")
             val textFileName = name.substringBeforeLast(".png") + ".txt"
-            Log.d("ItemRow", "URL: $textFileName")
+            Log.d("txt", "txt: $textFileName")
             try {
                 val textRef = FirebaseStorage.getInstance().reference.child("descriptions/$kind/$textFileName")
                 val url = textRef.downloadUrl.await().toString()
